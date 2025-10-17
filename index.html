@@ -5,13 +5,6 @@ title: Trade Journal
 
 <h1>Trade Journal</h1>
 
-<div class="controls">
-  <input id="q" class="input" type="search" placeholder="Filter (ticker, ISIN, side, notes…)" />
-  <span class="caption">
-    <em>From CSV:</em>&nbsp; <code>_data/trades.csv</code>
-  </span>
-</div>
-
 <div class="table-wrap">
   <table>
     <thead>
@@ -34,8 +27,6 @@ title: Trade Journal
       {% assign rows = site.data.trades %}
       {% for t in rows %}
         <tr>
-        Date	Instrument	ISIN	Exchange	Instrument Symbol	Event	Type	Quantity	Price	Amount EUR	VIX	Notes
-
           <td>{{ t.Date }}</td>
           <td><strong>{{ t.Instrument }}</strong></td>
           <td><code>{{ t.ISIN }}</code></td>
