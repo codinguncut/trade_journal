@@ -16,47 +16,40 @@ title: Trade Journal
   <table>
     <thead>
       <tr>
+        Date	Instrument	ISIN	Exchange	Instrument Symbol	Event	Type	Quantity	Price	Amount EUR	VIX	Notes
+
         <th class="sortable" data-type="text">Date <span class="arrow"></span></th>
-        <th class="sortable" data-type="text">Ticker <span class="arrow"></span></th>
+        <th class="sortable" data-type="text">Instrument <span class="arrow"></span></th>
         <th>ISIN</th>
-        <th class="sortable" data-type="text">Side <span class="arrow"></span></th>
-        <th class="sortable" data-type="num">Qty <span class="arrow"></span></th>
-        <th class="sortable" data-type="num">Entry <span class="arrow"></span></th>
-        <th class="sortable" data-type="num">Exit <span class="arrow"></span></th>
-        <th class="sortable" data-type="num">%Ret <span class="arrow"></span></th>
-        <th class="sortable" data-type="num">P/L <span class="arrow"></span></th>
+        <th class="sortable" data-type="text">Exchange <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Symbol <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Event <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Type <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Quantity <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Price <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Amount EUR <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">VIX <span class="arrow"></span></th>
         <th>Notes</th>
       </tr>
     </thead>
     <tbody data-rows>
       {% assign rows = site.data.trades %}
       {% for t in rows %}
-        {% assign entry = t.entry | default: t.price %}
-        {% assign exit = t.exit | default: "" %}
-        {% assign qty = t.qty | default: t.quantity %}
-        {% assign pl = 0 %}
-        {% if exit != "" and qty %}
-          {% assign pl = exit | minus: entry | times: qty %}
-        {% endif %}
-        {% assign pct = "" %}
-        {% if exit != "" and entry %}
-          {% assign pct = exit | minus: entry | divided_by: entry | times: 100 %}
-        {% endif %}
         <tr>
-          <td>{{ t.date }}</td>
-          <td><strong>{{ t.ticker }}</strong></td>
-          <td><code>{{ t.isin }}</code></td>
-          <td>
-            {% assign side = t.side | downcase %}
-            <span class="badge {% if side == "buy" %}buy{% else %}sell{% endif %}">
-              {{ t.side | upcase }}
-            </span>
-          </td>
-          <td class="num">{{ qty }}</td>
-          <td class="num">{{ entry }}</td>
-          <td class="num">{{ exit }}</td>
-          <td class="num">{% if pct != "" %}{{ pct | round: 2 }}%{% endif %}</td>
-          <td class="num" data-pl="{{ pl }}">{{ pl }}</td>
+        Date	Instrument	ISIN	Exchange	Instrument Symbol	Event	Type	Quantity	Price	Amount EUR	VIX	Notes
+
+          <td>{{ t.Date }}</td>
+          <td><strong>{{ t.Instrument }}</strong></td>
+          <td><code>{{ t.ISIN }}</code></td>
+          <td>{{ t.Exchange }} </td>
+          <td class="num">{{ t.Instrument }}</td>
+          <td class="num">{{ t.Symbol }}</td>
+          <td class="num">{{ t.Event }}</td>
+          <td class="num">{{ t.Type }}</td>
+          <td class="num">{{ t.Quantity }}</td>
+          <td class="num">{{ t.Price }}</td>
+          <td class="num">{{ t["Amount EUR"] }}</td>
+          <td class="num">{{ t.VIX }}</td>
           <td>{{ t.notes }}</td>
         </tr>
       {% endfor %}
