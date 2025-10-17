@@ -1,3 +1,32 @@
-<html>
-  <h1>Trade Journal</h1>
-</html>
+---
+layout: default
+title: Trade Journal
+---
+
+<h1>Trade Journal</h1>
+
+{% assign trades = site.data.trades %}
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Ticker</th>
+      <th>ISIN</th>
+      <th>Side</th>
+      <th>Qty</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in trades %}
+      <tr>
+        <td>{{ t.date }}</td>
+        <td>{{ t.ticker }}</td>
+        <td>{{ t.isin }}</td>
+        <td>{{ t.side }}</td>
+        <td>{{ t.qty }}</td>
+        <td>{{ t.price }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
