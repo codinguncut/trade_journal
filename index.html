@@ -16,8 +16,6 @@ title: Trade Journal
   <table>
     <thead>
       <tr>
-        Date	Instrument	ISIN	Exchange	Instrument Symbol	Event	Type	Quantity	Price	Amount EUR	VIX	Notes
-
         <th class="sortable" data-type="text">Date <span class="arrow"></span></th>
         <th class="sortable" data-type="text">Instrument <span class="arrow"></span></th>
         <th>ISIN</th>
@@ -42,8 +40,7 @@ title: Trade Journal
           <td><strong>{{ t.Instrument }}</strong></td>
           <td><code>{{ t.ISIN }}</code></td>
           <td>{{ t.Exchange }} </td>
-          <td class="num">{{ t.Instrument }}</td>
-          <td class="num">{{ t.Symbol }}</td>
+          <td class="num">{{ t["Instrument Symbol"] }}</td>
           <td class="num">{{ t.Event }}</td>
           <td class="num">{{ t.Type }}</td>
           <td class="num">{{ t.Quantity }}</td>
