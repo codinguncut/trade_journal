@@ -1,34 +1,107 @@
 ---
 layout: default
 title: Trade Journal
+scripts: >
+  (function(){
+    const q = document.getElementById('q');
+    const tbody = document.querySelector('tbody[data-rows]');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    function norm(s){ return (s||'').toLowerCase(); }
+    q.addEventListener('input', () => {
+      const t = norm(q.value);
+      rows.forEach(r=>{
+        const hay = norm(r.innerText);
+        r.style.display = hay.includes(t) ? '' : 'none';
+      });
+    });
+
+    // Simple sort
+    document.querySelectorAll('th.sortable').forEach((th,i)=>{
+      th.addEventListener('click', ()=>{
+        const dir = th.dataset.dir = (th.dataset.dir === 'asc' ? 'desc' : 'asc');
+        const mul = dir === 'asc' ? 1 : -1;
+        const isNum = th.dataset.type === 'num';
+        rows.sort((a,b)=>{
+          const A = a.children[i].innerText.trim();
+          const B = b.children[i].innerText.trim();
+          if(isNum){
+            const nA = parseFloat(A.replace(/[^\d.-]/g,'')) || 0;
+            const nB = parseFloat(B.replace(/[^\d.-]/g,'')) || 0;
+            return (nA - nB) * mul;
+          } else {
+            return A.localeCompare(B) * mul;
+          }
+        }).forEach(r=>tbody.appendChild(r));
+        document.querySelectorAll('th .arrow').forEach(x=>x.textContent='');
+        th.querySelector('.arrow').textContent = dir === 'asc' ? '▲' : '▼';
+      });
+    });
+
+    // Color P/L cells
+    document.querySelectorAll('[data-pl]').forEach(td=>{
+      const v = parseFloat(td.dataset.pl);
+      td.classList.add(v>=0 ? 'pl-pos' : 'pl-neg');
+    });
+  })();
 ---
 
 <h1>Trade Journal</h1>
 
-<p>Debug dump: {{ site.data.trades | jsonify }}</p>
+<div class="controls">
+  <input id="q" class="input" type="search" placeholder="Filter (ticker, ISIN, side, notes…)" />
+  <span class="caption">
+    <em>From CSV:</em>&nbsp; <code>_data/trades.csv</code>
+  </span>
+</div>
 
-{% assign trades = site.data.trades %}
-<table>
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Ticker</th>
-      <th>ISIN</th>
-      <th>Side</th>
-      <th>Qty</th>
-      <th>Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for t in trades %}
+<div class="table-wrap">
+  <table>
+    <thead>
       <tr>
-        <td>{{ t.date }}</td>
-        <td>{{ t.ticker }}</td>
-        <td>{{ t.isin }}</td>
-        <td>{{ t.side }}</td>
-        <td>{{ t.qty }}</td>
-        <td>{{ t.price }}</td>
+        <th class="sortable" data-type="text">Date <span class="arrow"></span></th>
+        <th class="sortable" data-type="text">Ticker <span class="arrow"></span></th>
+        <th>ISIN</th>
+        <th class="sortable" data-type="text">Side <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Qty <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Entry <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">Exit <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">%Ret <span class="arrow"></span></th>
+        <th class="sortable" data-type="num">P/L <span class="arrow"></span></th>
+        <th>Notes</th>
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody data-rows>
+      {% assign rows = site.data.trades %}
+      {% for t in rows %}
+        {% assign entry = t.entry | default: t.price %}
+        {% assign exit = t.exit | default: "" %}
+        {% assign qty = t.qty | default: t.quantity %}
+        {% assign pl = 0 %}
+        {% if exit != "" and qty %}
+          {% assign pl = exit | minus: entry | times: qty %}
+        {% endif %}
+        {% assign pct = "" %}
+        {% if exit != "" and entry %}
+          {% assign pct = exit | minus: entry | divided_by: entry | times: 100 %}
+        {% endif %}
+        <tr>
+          <td>{{ t.date }}</td>
+          <td><strong>{{ t.ticker }}</strong></td>
+          <td><code>{{ t.isin }}</code></td>
+          <td>
+            {% assign side = t.side | downcase %}
+            <span class="badge {% if side == "buy" %}buy{% else %}sell{% endif %}">
+              {{ t.side | upcase }}
+            </span>
+          </td>
+          <td class="num">{{ qty }}</td>
+          <td class="num">{{ entry }}</td>
+          <td class="num">{{ exit }}</td>
+          <td class="num">{% if pct != "" %}{{ pct | round: 2 }}%{% endif %}</td>
+          <td class="num" data-pl="{{ pl }}">{{ pl }}</td>
+          <td>{{ t.notes }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
