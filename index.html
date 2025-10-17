@@ -1,48 +1,6 @@
 ---
 layout: default
 title: Trade Journal
-scripts: >
-  (function(){
-    const q = document.getElementById('q');
-    const tbody = document.querySelector('tbody[data-rows]');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    function norm(s){ return (s||'').toLowerCase(); }
-    q.addEventListener('input', () => {
-      const t = norm(q.value);
-      rows.forEach(r=>{
-        const hay = norm(r.innerText);
-        r.style.display = hay.includes(t) ? '' : 'none';
-      });
-    });
-
-    // Simple sort
-    document.querySelectorAll('th.sortable').forEach((th,i)=>{
-      th.addEventListener('click', ()=>{
-        const dir = th.dataset.dir = (th.dataset.dir === 'asc' ? 'desc' : 'asc');
-        const mul = dir === 'asc' ? 1 : -1;
-        const isNum = th.dataset.type === 'num';
-        rows.sort((a,b)=>{
-          const A = a.children[i].innerText.trim();
-          const B = b.children[i].innerText.trim();
-          if(isNum){
-            const nA = parseFloat(A.replace(/[^\d.-]/g,'')) || 0;
-            const nB = parseFloat(B.replace(/[^\d.-]/g,'')) || 0;
-            return (nA - nB) * mul;
-          } else {
-            return A.localeCompare(B) * mul;
-          }
-        }).forEach(r=>tbody.appendChild(r));
-        document.querySelectorAll('th .arrow').forEach(x=>x.textContent='');
-        th.querySelector('.arrow').textContent = dir === 'asc' ? '▲' : '▼';
-      });
-    });
-
-    // Color P/L cells
-    document.querySelectorAll('[data-pl]').forEach(td=>{
-      const v = parseFloat(td.dataset.pl);
-      td.classList.add(v>=0 ? 'pl-pos' : 'pl-neg');
-    });
-  })();
 ---
 
 <h1>Trade Journal</h1>
